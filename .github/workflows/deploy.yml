@@ -19,18 +19,21 @@ jobs:
           HOST: ${{ secrets.EC2_HOST }}
           USER: ubuntu
         run: |
-          # Ensure correct key format
-          echo "$PRIVATE_KEY" | tr -d '\r' > private_key.pem
+          # Ensure the .ssh directory exists
+          mkdir -p ~/.ssh
+          touch ~/.ssh/known_hosts
+
+          # Add SSH Key
+          echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
 
-          # Add the host to known_hosts to avoid prompts
+          # Add EC2 instance to known hosts (fix missing known_hosts error)
           ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
 
           # Connect and deploy
-          ssh -i private_key.pem $USER@$HOST <<EOF
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST <<EOF
             cd /home/ubuntu/app
             git pull origin main
             npm install
             pm2 restart all
           EOF
-
