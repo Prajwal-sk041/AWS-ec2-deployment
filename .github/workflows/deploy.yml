@@ -23,8 +23,8 @@ jobs:
           mkdir -p ~/.ssh
           touch ~/.ssh/known_hosts
 
-          # Add SSH Key
-          echo "$PRIVATE_KEY" > private_key.pem
+          # Convert PRIVATE_KEY to a properly formatted private key file
+          echo "$PRIVATE_KEY" | awk '{gsub(/\\n/,"\n")}1' > private_key.pem
           chmod 600 private_key.pem
 
           # Add EC2 instance to known hosts (fix missing known_hosts error)
