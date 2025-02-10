@@ -13,27 +13,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup SSH and Deploy
+      - name: Setup SSH and Test Connection
         env:
           PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           HOST: ${{ secrets.EC2_HOST }}
           USER: ubuntu
         run: |
-          # Ensure the .ssh directory exists
-          mkdir -p ~/.ssh
-          touch ~/.ssh/known_hosts
-
-          # Convert PRIVATE_KEY to a properly formatted private key file
-          echo "$PRIVATE_KEY" | awk '{gsub(/\\n/,"\n")}1' > private_key.pem
+          echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-
-          # Add EC2 instance to known hosts (fix missing known_hosts error)
-          ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-
-          # Connect and deploy
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST <<EOF
-            cd /home/ubuntu/app
-            git pull origin main
-            npm install
-            pm2 restart all
-          EOF
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST "echo '✅ GitHub Actions SSH Successful'"
