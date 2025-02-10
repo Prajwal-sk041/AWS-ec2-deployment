@@ -19,6 +19,6 @@ jobs:
           HOST: ${{ secrets.EC2_HOST }}
           USER: ubuntu
         run: |
-          echo "$PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST "echo '✅ GitHub Actions SSH Successful'"
+          echo "$PRIVATE_KEY" > git-action.pem
+          chmod 600 git-action.pem
+          ssh -o StrictHostKeyChecking=no -i git-action.pem $USER@$HOST "echo '✅ GitHub Actions SSH Successful'"
