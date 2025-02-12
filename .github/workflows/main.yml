@@ -1,0 +1,25 @@
+name: Merge Code
+
+on:
+  workflow_run:
+    workflows: ["Test Pipeline"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  merge:
+    name: Merge New Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Merge Changes to Main
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@github.com"
+          git merge origin/development
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
